@@ -1,0 +1,72 @@
+Deployment 2: Solana Lending Program with Streamflow, Aave, and Terra Integration
+
+Step 1: Deploy Solana Lending Program with Streamflow Integration
+
+Streamflow Integration in Solana Contract (Anchor)
+
+use anchor_lang::prelude::*;
+use streamflow::stream::*;
+
+#[program]
+pub mod lending_program {
+    use super::*;
+
+    pub fn create_loan(ctx: Context<CreateLoan>, amount: u64) -> ProgramResult {
+        let loan = &mut ctx.accounts.loan;
+        loan.amount = amount;
+        Ok(())
+    }
+}
+
+#[account]
+pub struct Loan {
+    pub amount: u64,
+}
+
+Streamflow Integration for Programmable Lending Terms:
+
+#[derive(Accounts)]
+pub struct CreateStream<'info> {
+    #[account(mut)]
+    pub sender: Signer<'info>,
+    #[account(mut)]
+    pub recipient: AccountInfo<'info>,
+    pub system_program: Program<'info, System>,
+    pub streamflow_program: Program<'info, Streamflow>,
+}
+
+Step 2: Integrate Aave for Liquidity Pools and Borrowing
+
+Aave liquidity pool integration requires interaction with the Ethereum network:
+
+Smart Contract Interaction with Aave (Solidity)
+
+pragma solidity ^0.8.0;
+import "@aave/protocol-v2/contracts/interfaces/IPool.sol";
+
+contract SolanaLendingAave {
+    IPool public aavePool;
+
+    constructor(address _aavePool) {
+        aavePool = IPool(_aavePool);
+    }
+
+    function depositToAave(address asset, uint256 amount) external {
+        aavePool.deposit(asset, amount, address(this), 0);
+    }
+
+    function borrowFromAave(address asset, uint256 amount) external {
+        aavePool.borrow(asset, amount, 1, 0, address(this));
+    }
+}
+
+Step 3: Connect Terra for Stablecoin Functionality
+
+Terra’s stablecoin integration will enable multi-currency support.
+
+Terra Smart Contract (CosmWasm)
+
+use cosmwasm_std::{Binary, Env, HandleResponse, InitResponse, StdResult};
+
+pub fn handle(env: Env, msg: StablecoinMsg) -> StdResult<HandleResponse> {
+    // Handle multi-currency lending and borrowing

@@ -1,0 +1,74 @@
+ Pseudocode (Solana, Solidity for Aave and PancakeSwap, Terra)
+
+rust
+// Solana smart contract for lending/borrowing using Streamflow for programmable lending terms
+use anchor_lang::prelude::;
+
+declare_id!("LendingPlatformId");
+
+[program]
+mod lending_platform {
+    use super::;
+
+    pub fn deposit_funds(ctx: Context<Deposit>, amount: u64) -> ProgramResult {
+        let account = &mut ctx.accounts.user_account;
+        account.balance += amount;
+        Ok(())
+    }
+
+    pub fn borrow_funds(ctx: Context<Borrow>, amount: u64) -> ProgramResult {
+        let account = &mut ctx.accounts.user_account;
+        require!(account.balance >= amount, LendingError::InsufficientBalance);
+        account.balance -= amount;
+        Ok(())
+    }
+}
+
+[account]
+pub struct UserAccount {
+    pub balance: u64,
+}
+
+
+ Solidity for Liquidity Pools (Aave integration)
+
+solidity
+// Aave Protocol for managing liquidity pools
+pragma solidity ^0.8.0;
+import "@aave/protocol-v2/contracts/interfaces/ILendingPool.sol";
+
+contract AaveLending {
+    ILendingPool lendingPool;
+
+    constructor(address lendingPoolAddress) {
+        lendingPool = ILendingPool(lendingPoolAddress);
+    }
+
+    function deposit(uint amount, address asset) external {
+        // Deposit into Aave liquidity pool
+        lendingPool.deposit(asset, amount, msg.sender, 0);
+    }
+
+    function borrow(uint amount, address asset) external {
+        // Borrow from Aave
+        lendingPool.borrow(asset, amount, 1, 0, msg.sender);
+    }
+}
+
+
+ Terra Stablecoin Transfer (JavaScript)
+
+```javascript
+// Terra.js for cross-chain stablecoin transfers
+const { LCDClient, MsgSend } = require('@terra-money/terra.js');
+
+const terra = new LCDClient({
+  URL: 'https://lcd.terra.dev',
+  chainID: 'columbus-5',
+});
+
+const sendTx = new MsgSend(
+  'terra1...',
+  'terra1recipient...',
+  { uluna: 1000000 }
+);
